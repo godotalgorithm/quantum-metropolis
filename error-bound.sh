@@ -1,0 +1,12 @@
+./error-bound 1 0.9 > error-bound1.txt
+./error-bound 2 0.9 > error-bound2.txt
+./error-bound 3 0.8 > error-bound3.txt
+./error-bound 4 0.7 > error-bound4.txt
+./error-bound 5 0.6 > error-bound5.txt
+./error-bound 6 0.5 > error-bound6.txt
+./error-bound 7 0.4 > error-bound7.txt
+./error-bound 8 0.3 > error-bound8.txt
+./error-bound 9 0.2 > error-bound9.txt
+./error-bound 10 0.1 > error-bound10.txt
+./error-bound 11 0.1 > error-bound11.txt
+./error-bound 12 0.1 > error-bound12.txt
