@@ -1,4 +1,4 @@
-// verification of the classical & quantum rejection-free Metropolis algorithms
+// verification of the quantum Metropolis algorithm
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -54,35 +54,42 @@ int transition(int input, int num, double *rate)
     return output;
 }
 
-// quantum rejection-free Metropolis algorithm (w/ eigenstate transitions)
+// quantum Metropolis algorithm (w/ eigenstate transitions)
 // NOTE: width = 0 is the classical case
 int metropolis(int a, int num, int max_iter, double width, double *energy, double *rate)
 {
-    int n = 1;
     double u;
 
     // line 2
-    double q = 0.0;
-    // line 3
-    double q_max = 0.0;
+    double E = energy[a] + random_normal()*sqrt(width);
+    // line 3 (trivial here)
     // line 4
-    double E = energy[a] + random_normal()*sqrt(0.5*width);
+    int b = transition(a, num, rate);
+    // line 5
+    int c = a;
+    int n = 0;
+    double q_max = 0.0;
+    double q = 0.0;
     // line 6
     do
     {
         // line 7
-        a = transition(a, num, rate);
-        // line 8
-        double E_new = energy[a] + random_normal()*sqrt(0.5*width);
-        // line 9
+        int swap = b;
+        b = c;
+        c = swap;
+        n++;
         if(q_max < q) { q_max = q; }
+        // line 8
+        a = c;
+        // line 9
+        double omega = energy[a] + random_normal()*sqrt(width);
         // line 10
-        q = exp(E - E_new - 0.5*width);
+        q = exp(E - omega - width);
         // line 11
         u = random_uniform();
     // line 12
-    } while(u > (q - q_max)/(1.0 - q_max) && n++ < max_iter);
-    // line 13
+    } while(u > (q - q_max)/(1.0 - q_max) && n != max_iter);
+    // line 13 (internal state returned, as in the classical algorithm)
     return a;
 }
 

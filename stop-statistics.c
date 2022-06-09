@@ -4,16 +4,13 @@
 #include <limits.h>
 #include <math.h>
 
-// TO DO:
-// - detect & fix even rarer stalling problem ...
-
 // mode 0: finite width case
 // mode 1: conditional sampling of zero-width limit
 // mode 2: conditional sampling with fast-forwarding
 
 // parameters specifying the integration over E_old (2*ENERGY_MAX is used as an "infinite" energy reference)
 #define ENERGY_MAX 12.0
-#define ENERGY_NUM 101
+#define ENERGY_NUM 10001
 
 // energy separation for Taylor series expansion in rejection PDF & CDF
 #define ENERGY_TOL 1e-3
@@ -30,8 +27,18 @@
 //       point where approximation and numerical errors are approximately balanced. However, the Taylor series is
 //       not of a high enough order to preserve all digits of accuracy, and so we need to use bisection as a fail-safe
 //       root finder when performing root-finding on this problematic CDF on the unstable side of the crossover point.
-//       These errors are very small relative to what is being measured here (our conditional sampling approach
-//       achieves high relative accuracy), they merely complicate the numerics and solver strategies.
+//       These biasing errors are very small relative to our target sampling errors (our conditional sampling approach
+//       achieves high relative accuracy), thus they merely complicate the numerics and solver strategies.
+
+// NOTE: The data generation process revealed some useful asymptotics about the distribution. The initiation
+//       probability was apparent from constructing the initial PDF & CDF, which produced a probability that can
+//       be calculated analytically as a simple Gaussian integral. The fast-forwarding clarified that the tail
+//       process reduces to finding energies below the initial energy, once the possibility of accepting an
+//       energy above has been exhausted. While the probability distribution of this tail process can be written
+//       down as an integral, it cannot be evaluated analytically. Instead, I used Laplace's method (i.e. the method
+//       of steepest descent, the saddle-point approximation) to construct a large-n asymptotic form of
+//       n^{-2}/sqrt(a + b*log(n)), which fit the tail of the data to within the statistical error bars,
+//       allowing for the coefficient of the limiting form, n^{-2}/sqrt(log(n)), to be extracted accurately.
 
 // pseudorandom 64-bit unsigned integer [xorshift1024s() from http://en.wikipedia.org/wiki/Xorshift]
 uint64_t random64(const uint32_t seed) // 0 for normal use, nonzero seed value to reseed
